@@ -1,14 +1,22 @@
 {
-  "name": "pi-unified-paste",
-  "version": "0.2.1",
+  "name": "pi-workflow-tools",
+  "version": "0.3.0",
   "private": true,
-  "description": "Paste Windows clipboard text, file references, and screenshots into Pi with Ctrl+V.",
+  "description": "Configure Pi's default model and paste clipboard content with a single shortcut.",
   "type": "module",
   "engines": { "node": ">=22.19.0" },
-  "keywords": ["pi-package", "clipboard", "windows"],
+  "keywords": ["pi-package", "clipboard", "models"],
   "scripts": { "test": "node --test" },
   "dependencies": { "koffi": "3.3.6" },
+  "peerDependencies": {
+    "@earendil-works/pi-coding-agent": "*",
+    "@earendil-works/pi-tui": "*"
+  },
+  "peerDependenciesMeta": {
+    "@earendil-works/pi-coding-agent": { "optional": true },
+    "@earendil-works/pi-tui": { "optional": true }
+  },
   "pi": {
-    "extensions": ["./src/index.ts"]
+    "extensions": ["./src/default-model.ts", "./src/index.ts"]
   }
 }

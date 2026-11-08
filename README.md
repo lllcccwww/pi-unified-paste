@@ -1,42 +1,51 @@
-# Pi 统一粘贴
+# Pi Workflow Tools
 
-在 Pi 终端输入框里，用同一个 `Ctrl+V` 粘贴文字、文件和截图。
+给 Pi 终端加上两项功能：用 `/default-model` 设置新会话的默认模型，以及用同一个 `Ctrl+V` 粘贴文字、文件和截图。
 
-- 文字进入草稿，正文里出现的路径仍按文字处理。
-- 资源管理器复制的文件以可见路径加入草稿。UNC 路径和设备路径会跳过。
-- 剪贴板图片在草稿里显示为截图标记。按回车提交时，Pi 才把图片发给当前模型。删除标记即可取消。需要选择支持图片输入的模型。
+## 安装
 
-## 系统要求
-
-当前支持原生 Windows。需要 Node.js 22.19 或更新版本，以及 Pi 的终端模式。已验证 Pi 1.5.0 能加载扩展并注册快捷键。
-
-## 试用与安装
-
-从 GitHub 安装时，Pi 会安装所需的 Koffi 原生绑定。安装后重开 Pi。
+需要 Node.js 22.19 或更新版本和 Pi 终端模式。已在 Pi 1.5.0 上验证。剪贴板功能目前支持原生 Windows。
 
 ```text
-pi install https://github.com/lllcccwww/pi-unified-paste.git
+pi install https://github.com/lllcccwww/pi-workflow-tools.git
 ```
 
-如果已有本地源码，可以在仓库目录用下面的命令试用。该次会话只加载这个扩展。
+安装后重开 Pi。后续可用 `pi update https://github.com/lllcccwww/pi-workflow-tools.git` 更新。
+
+## 设置默认模型
+
+输入 `/default-model`，搜索提供商、模型名或 ID，用方向键选择，按回车保存。也可以用 `/default-model deepseek` 带上搜索词。
+
+保存的是新会话的全局默认模型。项目单独设置的默认模型仍优先。
+
+## 统一粘贴
+
+在输入框按 `Ctrl+V`，扩展按剪贴板内容选择粘贴方式：
+
+- 文字直接进入草稿，正文里的路径仍按文字处理。
+- 资源管理器复制的文件以可见路径加入草稿。扩展跳过 UNC 和设备路径，也不打开这些文件。
+- 截图先显示为可删除的标记。提交时 Pi 才会把图片发送给当前模型，因此需要支持图片输入的模型。每条消息最多两张截图，每张 PNG 最多 8 MiB。
+
+如果文字能粘贴但文件和截图没反应，控制台可能先执行了文本粘贴。传统 Windows 控制台可在标题栏右键 → **属性 → 选项** 里关闭 **启用 Ctrl 键快捷方式**。此设置也会影响该控制台的其他内置 Ctrl 快捷键。Windows Terminal 可在 **设置 → 操作** 中解除 `Ctrl+V` 的终端粘贴绑定。
+
+扩展只在处理粘贴按键时读取剪贴板。它通过 Node.js 工作线程和固定版本的 Koffi 调用 Windows 系统库。提交前的截图保存在内存中。发送后，图片由 Pi 按正常消息流程处理，包括模型请求和会话记录。
+
+## 从独立扩展迁移
+
+旧包 `pi-unified-paste` 已并入此包。如果之前用旧地址安装过，可以先移除旧包，再安装新包：
+
+```text
+pi remove https://github.com/lllcccwww/pi-unified-paste.git
+pi install https://github.com/lllcccwww/pi-workflow-tools.git
+```
+
+如果还在 `~/.pi/agent/extensions/` 中单独安装了 `pi-default-model.ts`，请把那一份移出扩展目录，避免重复注册 `/default-model`。
+
+## 本地试用
+
+在仓库目录启动一个只加载此包的测试会话：
 
 ```text
 npm ci --ignore-scripts
-pi -ne --no-session -e .\src\index.ts
+pi -ne --no-session -e .
 ```
-
-分别复制一小段文字、一个本地文件和一张截图，在 Pi 输入框按 `Ctrl+V`。若已经装了处理 `Ctrl+V` 的其他扩展，请先停用冲突的扩展。
-
-如果文字能粘贴但文件和截图没反应，控制台可能在 Pi 收到按键前就执行了文本粘贴。传统 Windows 控制台可以在标题栏右键 → **属性 → 选项** 里关闭 **启用 Ctrl 键快捷方式**，再测试。此设置也会影响该控制台的其他内置 Ctrl 快捷键。Windows Terminal 可在 **设置 → 操作** 中取消 `Ctrl+V` 的终端粘贴绑定。
-
-更新从 GitHub 安装的版本：
-
-```text
-pi update https://github.com/lllcccwww/pi-unified-paste.git
-```
-
-## 剪贴板和数据
-
-扩展只在响应粘贴按键时读取剪贴板。Node.js 工作线程通过固定版本的 Koffi 调用系统目录中的 Win32 DLL。运行时无需启动外部程序。复制文件时只取文件名和路径，扩展不会探测或读取这些文件。
-
-每条消息最多两张截图，每张 PNG 最多 8 MiB。提交前截图在内存中，扩展不保存临时图片。发送后，图片由 Pi 按正常消息流程处理，包括所选模型的请求和 Pi 的会话记录。
