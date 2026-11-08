@@ -1,4 +1,4 @@
-# Pi Windows 统一粘贴
+# Pi 统一粘贴
 
 在 Windows 的 Pi 终端输入框里，用同一个 `Ctrl+V` 粘贴文字、资源管理器复制的文件和截图。
 
@@ -13,7 +13,7 @@
 从 GitHub 安装时，Pi 会安装所需的 Koffi 原生绑定。安装后重开 Pi。
 
 ```text
-pi install https://github.com/lllcccwww/pi-windows-unified-paste.git
+pi install https://github.com/lllcccwww/pi-unified-paste.git
 ```
 
 如果已有本地源码，可以在仓库目录用下面的命令试用。该次会话只加载这个扩展。
@@ -30,7 +30,7 @@ pi -ne --no-session -e .\src\index.ts
 更新从 GitHub 安装的版本：
 
 ```text
-pi update https://github.com/lllcccwww/pi-windows-unified-paste.git
+pi update https://github.com/lllcccwww/pi-unified-paste.git
 ```
 
 ## 剪贴板和数据
