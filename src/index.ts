@@ -38,6 +38,11 @@ export default function unifiedPaste(pi: ExtensionAPI): void {
       const draft = ctx.ui.getEditorText();
       const controller = new AbortController();
       request = controller;
+      const pasteIntoDraft = (text: string) => {
+        ctx.ui.pasteToEditor(text);
+        // Pi 1.5.0 renders the keypress before the async read finishes.
+        ctx.ui.setStatus("pi-unified-paste", undefined);
+      };
       try {
         const clip = await readClipboard(controller.signal);
         if (controller.signal.aborted) return;
@@ -46,14 +51,14 @@ export default function unifiedPaste(pi: ExtensionAPI): void {
           return;
         }
         if (clip.kind === "text") {
-          ctx.ui.pasteToEditor(clip.text.replace(/\r\n?/g, "\n").replace(controls, ""));
+          pasteIntoDraft(clip.text.replace(/\r\n?/g, "\n").replace(controls, ""));
           return;
         }
         if (clip.kind === "files") {
           const paths = clip.paths;
           const local = [...new Set(paths.filter((file) => localPath.test(file)))];
           if (paths.some((file) => !localPath.test(file))) ctx.ui.notify("已跳过 UNC 路径、设备路径或无效路径。", "warning");
-          if (local.length) ctx.ui.pasteToEditor(local.map((file) => /\s/u.test(file) ? `"${file}"` : file).join("\n"));
+          if (local.length) pasteIntoDraft(local.map((file) => /\s/u.test(file) ? `"${file}"` : file).join("\n"));
           return;
         }
         if (clip.kind !== "png") {
@@ -70,7 +75,7 @@ export default function unifiedPaste(pi: ExtensionAPI): void {
           return;
         }
         const marker = `[截图 ${++nextScreenshot}·${randomBytes(4).toString("hex")}]`;
-        ctx.ui.pasteToEditor(`${draft ? " " : ""}${marker} `);
+        pasteIntoDraft(`${draft ? " " : ""}${marker} `);
         screenshots.set(marker, Buffer.from(clip.data).toString("base64"));
       } catch {
         if (!controller.signal.aborted) ctx.ui.notify(errors.error, "warning");

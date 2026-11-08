@@ -1,6 +1,6 @@
 {
   "name": "pi-unified-paste",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "private": true,
   "description": "Paste Windows clipboard text, file references, and screenshots into Pi with Ctrl+V.",
   "type": "module",
