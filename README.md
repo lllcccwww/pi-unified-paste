@@ -8,32 +8,33 @@
 
 ## 试用与安装
 
-需要原生 Windows、Windows PowerShell 5.1 和 Pi 的终端模式。已验证 Pi 1.5.0 能加载扩展并注册快捷键。
+需要原生 Windows、Node.js 22.19 或更新版本，以及 Pi 的终端模式。已验证 Pi 1.5.0 能加载扩展并注册快捷键。
 
-在仓库目录打开 PowerShell，启动一个单独的试用会话：
+从 GitHub 安装时，Pi 会安装所需的 Koffi 原生绑定。安装后重开 Pi。
 
-```powershell
+```text
+pi install https://github.com/lllcccwww/pi-windows-unified-paste.git
+```
+
+如果已有本地源码，可以在仓库目录用下面的命令试用。该次会话只加载这个扩展。
+
+```text
+npm ci --ignore-scripts
 pi -ne --no-session -e .\src\index.ts
 ```
 
-分别复制一小段文字、一个本地文件和一张截图，在 Pi 输入框按 `Ctrl+V`。三种内容都能粘贴后，退出试用会话，在仓库目录运行：
-
-```powershell
-pi install (Get-Location).Path
-```
-
-安装后重开 Pi。若已经装了处理 `Ctrl+V` 的其他扩展，请先停用冲突的扩展。
+分别复制一小段文字、一个本地文件和一张截图，在 Pi 输入框按 `Ctrl+V`。若已经装了处理 `Ctrl+V` 的其他扩展，请先停用冲突的扩展。
 
 如果文字能粘贴但文件和截图没反应，控制台可能在 Pi 收到按键前就执行了文本粘贴。传统 Windows 控制台可以在标题栏右键 → **属性 → 选项** 里关闭 **启用 Ctrl 键快捷方式**，再测试。此设置也会影响该控制台的其他内置 Ctrl 快捷键。Windows Terminal 可在 **设置 → 操作** 中取消 `Ctrl+V` 的终端粘贴绑定。
 
-卸载本地安装时，在同一个仓库目录运行：
+更新从 GitHub 安装的版本：
 
-```powershell
-pi remove (Get-Location).Path
+```text
+pi update https://github.com/lllcccwww/pi-windows-unified-paste.git
 ```
 
 ## 剪贴板和数据
 
-扩展只在响应粘贴按键时读取剪贴板。它用绝对路径启动系统 PowerShell，从系统目录运行固定的 Win32 剪贴板助手。文件路径不用于探测或读取文件，扩展也不把剪贴板内容拼进命令。
+扩展只在响应粘贴按键时读取剪贴板。Node.js 工作线程通过固定版本的 Koffi 调用系统目录中的 Win32 DLL。运行时无需启动外部程序。复制文件时只取文件名和路径，扩展不会探测或读取这些文件。
 
 每条消息最多两张截图，每张 PNG 最多 8 MiB。提交前截图在内存中，扩展不保存临时图片。发送后，图片由 Pi 按正常消息流程处理，包括所选模型的请求和 Pi 的会话记录。
