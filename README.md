@@ -30,17 +30,6 @@ pi install https://github.com/lllcccwww/pi-workflow-tools.git
 
 扩展只在处理粘贴按键时读取剪贴板。它通过 Node.js 工作线程和固定版本的 Koffi 调用 Windows 系统库。提交前的截图保存在内存中。发送后，图片由 Pi 按正常消息流程处理，包括模型请求和会话记录。
 
-## 从独立扩展迁移
-
-旧包 `pi-unified-paste` 已并入此包。如果之前用旧地址安装过，可以先移除旧包，再安装新包：
-
-```text
-pi remove https://github.com/lllcccwww/pi-unified-paste.git
-pi install https://github.com/lllcccwww/pi-workflow-tools.git
-```
-
-如果还在 `~/.pi/agent/extensions/` 中单独安装了 `pi-default-model.ts`，请把那一份移出扩展目录，避免重复注册 `/default-model`。
-
 ## 本地试用
 
 在仓库目录启动一个只加载此包的测试会话：
